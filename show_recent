@@ -33,8 +33,6 @@ ORDER BY DESC(?time)
 LIMIT 100
 """ % th
 
-print query
-
 res = sparql.execute_query(endpoint, query)
 
 res.output(sys.stdout)
