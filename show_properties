@@ -12,14 +12,15 @@ endpoint = sparql.default_endpoint()
 query = """
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT DISTINCT ?property ?value
+SELECT DISTINCT ?label ?value
 WHERE {
   <%s> ?property ?value .
+  ?property rdfs:label ?label
 }
 LIMIT 100
 """ % sys.argv[1]
 
 res = sparql.execute_query(endpoint, query)
 
-res.output(sys.stdout)
+res.output(sys.stdout, column_widths={'label': 20, 'value': 50})
 

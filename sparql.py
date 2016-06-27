@@ -5,6 +5,7 @@ import requests
 import sys
 import os
 import StringIO
+import types
 
 class URI(object):
 
@@ -25,8 +26,19 @@ class Results(object):
         pretty_print_results(out, self)
         return out.getvalue()
 
-    def output(self, out):
-        pretty_print_results(out, self)
+    def output(self, out, max_width=None, column_widths=None):
+        pretty_print_results(out, self, max_width, column_widths)
+
+    def column_width(self, var):
+        width = len(var)
+        for row in self.values:
+            if row[var] == None:
+                val = ""
+            else:
+                val = str(row[var])
+            if len(val) > width:
+                width = len(val)
+        return width
 
 def execute_query(url, query):
 
@@ -69,44 +81,48 @@ def execute_query(url, query):
 
     return Results(vars, objects)
 
-def pretty_print_results(output, res, max_column=999):
+def pretty_print_results(output, res, max_width=None, column_widths=None):
 
     vars = res.variables
 
-    column_size = {}
+    columns = {}
+
     for var in vars:
-        if len(var) > max_column:
-            column_size[var] = max_column
+        if column_widths != None and column_widths.has_key(var):
+    	    columns[var] = column_widths[var]
         else:
-    	    column_size[var] = len(var)
-    	
-    for row in res.values:
-    	for var in vars:
-            if row[var] == None:
-                val = ""
-            else:
-                val = str(row[var])
-	    if len(val) > column_size[var]:
-	        column_size[var] = len(val)
-                if column_size[var] > max_column:
-                    column_size[var] = max_column
+            columns[var] = res.column_width(var)
+
+    if max_width != None:
+
+        content = 0
+        overheads = 1
+        for var in vars:
+            overheads = overheads + 3
+            content = content + columns[var]
+
+        if (overheads + content) > max_width:
+            remain = max_width - overheads
+
+        for var in vars:
+            columns[var] = int(columns[var] * remain / content)
 
     for var in vars:
         output.write("+-");
-        for i in range(column_size[var]):
+        for i in range(columns[var]):
             output.write("-")
         output.write("-");
     output.write("+\n");
 
     for var in vars:
         output.write("| ");
-        output.write(("%-" + str(column_size[var]) + "s") % var);
+        output.write(("%-" + str(columns[var]) + "s") % var[0:columns[var]])
         output.write(" ");
     output.write("|\n");
 
     for var in vars:
         output.write("+-");
-        for i in range(column_size[var]):
+        for i in range(columns[var]):
             output.write("-")
         output.write("-");
     output.write("+\n");
@@ -117,16 +133,16 @@ def pretty_print_results(output, res, max_column=999):
                 value = str(row[var])
             else:
                 value = ""
-            if len(value) > max_column:
-                value = value[0:max_column]
+            if len(value) > columns[var]:
+                value = value[0:columns[var]]
             output.write("| ");
-            output.write(("%-" + str(column_size[var]) + "s") % value);
+            output.write(("%-" + str(columns[var]) + "s") % value);
             output.write(" ");
         output.write("|\n");
 
     for var in vars:
         output.write("+-");
-        for i in range(column_size[var]):
+        for i in range(columns[var]):
             output.write("-")
         output.write("-");
     output.write("+\n");
