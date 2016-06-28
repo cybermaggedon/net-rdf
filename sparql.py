@@ -26,7 +26,7 @@ class Results(object):
         pretty_print_results(out, self)
         return out.getvalue()
 
-    def output(self, out, max_width=None, column_widths=None):
+    def output(self, out=sys.stdout, max_width=None, column_widths=None):
         pretty_print_results(out, self, max_width, column_widths)
 
     def column_width(self, var):
