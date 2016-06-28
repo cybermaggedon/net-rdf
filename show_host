@@ -1,0 +1,39 @@
+#!/usr/bin/env python
+
+import sparql
+import sys
+
+if len(sys.argv) != 2:
+    print "Usage:\n\tshow_properties <host>\n"
+    sys.exit(1)
+
+endpoint = sparql.default_endpoint()
+
+query = """
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX cybprop: <http://cyberprobe.sf.net/prop/>
+PREFIX cybtype: <http://cyberprobe.sf.net/type/>
+
+SELECT DISTINCT ?obs ?label
+WHERE {
+  {
+    ?obs a cybtype:observation .
+    ?obs rdfs:label ?label .
+    ?obs cybprop:query "%s"
+  } UNION {
+    ?obs a cybtype:observation .
+    ?obs rdfs:label ?label .
+    ?obs cybprop:answer_name "%s"
+  } UNION {
+    ?obs a cybtype:observation .
+    ?obs rdfs:label ?label .
+    ?obs <http://cyberprobe.sf.net/prop/header:Host> "%s"
+  }
+}
+LIMIT 100
+""" % (sys.argv[1], sys.argv[1], sys.argv[1])
+
+res = sparql.execute_query(endpoint, query)
+
+res.output()
+
