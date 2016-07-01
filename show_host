@@ -17,17 +17,17 @@ PREFIX cybtype: <http://cyberprobe.sf.net/type/>
 SELECT DISTINCT ?obs ?label
 WHERE {
   {
+    ?obs cybprop:query "%s" .
     ?obs a cybtype:observation .
     ?obs rdfs:label ?label .
-    ?obs cybprop:query "%s"
   } UNION {
+    ?obs cybprop:answer_name "%s" .
     ?obs a cybtype:observation .
     ?obs rdfs:label ?label .
-    ?obs cybprop:answer_name "%s"
   } UNION {
+    ?obs <http://cyberprobe.sf.net/prop/header:Host> "%s" .
     ?obs a cybtype:observation .
     ?obs rdfs:label ?label .
-    ?obs <http://cyberprobe.sf.net/prop/header:Host> "%s"
   }
 }
 LIMIT 100

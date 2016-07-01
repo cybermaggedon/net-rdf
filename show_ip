@@ -34,10 +34,10 @@ PREFIX cybtype: <http://cyberprobe.sf.net/type/>
 SELECT ?label ?dest
 WHERE {
   ?obs cybprop:source <%s> .
-  ?obs a cybtype:observation .
-  ?obs rdfs:label ?label .
   ?obs cybprop:dest ?destip .
   ?destip a cybtype:ipv4 .
+  ?obs a cybtype:observation .
+  ?obs rdfs:label ?label .
   ?destip cybprop:address ?dest
 }
 LIMIT 100

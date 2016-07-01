@@ -16,9 +16,9 @@ PREFIX cybtype: <http://cyberprobe.sf.net/type/>
 
 SELECT ?obs ?label ?src ?dest
 WHERE {
+  ?obs cybprop:url <%s> .
   ?obs a cybtype:observation .
   ?obs rdfs:label ?label .
-  ?obs cybprop:url <%s> .
   ?obs cybprop:source ?srcip .
   ?srcip cybprop:address ?src .
   ?srcip a cybtype:ipv4 .
